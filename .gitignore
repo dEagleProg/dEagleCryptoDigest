@@ -1,5 +1,6 @@
-# Environment variables
+# Конфиденциальные данные
 .env
+*.env
 
 # Python
 __pycache__/
@@ -7,6 +8,9 @@ __pycache__/
 *$py.class
 *.so
 .Python
+venv/
+ENV/
+env/
 build/
 develop-eggs/
 dist/
@@ -22,6 +26,22 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Логи
+*.log
+
+# Локальные настройки
+notifications.json
+
+# Environment variables
+.env.local
+.env.*.local
 
 # Virtual Environment
 venv/
