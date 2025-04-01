@@ -186,7 +186,11 @@ async def process_check_callback(callback: types.CallbackQuery):
     if not callback.message:
         return
     data = await fetch_crypto_data()
-    await callback.answer(create_summary_message(data), show_alert=False)
+    await bot.send_message(
+        chat_id=callback.message.chat.id,
+        text=create_summary_message(data)
+    )
+    await callback.answer()
 
 @dp.message(Command("settings"))
 async def cmd_settings(message: types.Message):
@@ -227,14 +231,15 @@ async def process_set_time_callback(callback: types.CallbackQuery, state: FSMCon
     user_id = callback.from_user.id
     current_time = user_notifications.get(user_id, "Не установлено")
     
-    await callback.answer(
-        f"🕒 Текущее время уведомлений: {current_time}\n\n"
-        f"Введите новое время для ежедневных уведомлений в формате ЧЧ:ММ по времени Мадрида (например, 09:00):\n"
-        f"⚠️ Учитывайте, что время указывается по часовому поясу Мадрида (UTC+1)\n\n"
-        f"Примеры форматов:\n"
-        f"• 09:00 - уведомления в 9 утра\n"
-        f"• 15:30 - уведомления в 3:30 дня\n"
-        f"• 23:00 - уведомления в 11 вечера"
+    await bot.send_message(
+        chat_id=callback.message.chat.id,
+        text=f"🕒 Текущее время уведомлений: {current_time}\n\n"
+             f"Введите новое время для ежедневных уведомлений в формате ЧЧ:ММ по времени Мадрида (например, 09:00):\n"
+             f"⚠️ Учитывайте, что время указывается по часовому поясу Мадрида (UTC+1)\n\n"
+             f"Примеры форматов:\n"
+             f"• 09:00 - уведомления в 9 утра\n"
+             f"• 15:30 - уведомления в 3:30 дня\n"
+             f"• 23:00 - уведомления в 11 вечера"
     )
     await state.set_state(NotificationSettings.waiting_for_time)
     await callback.answer()
