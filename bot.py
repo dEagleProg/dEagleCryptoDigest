@@ -164,29 +164,29 @@ def create_summary_message(data):
     fear_greed_text = ""
     if data['fear_greed_index'] is not None:
         if data['fear_greed_index'] >= 75:
-            fear_greed_text = f"😱 Индекс страха и жадности: {data['fear_greed_index']} (Крайняя жадность)"
+            fear_greed_text = f"😱 Индекс страха и жадности: *{data['fear_greed_index']}* (Крайняя жадность)"
         elif data['fear_greed_index'] >= 60:
-            fear_greed_text = f"😊 Индекс страха и жадности: {data['fear_greed_index']} (Жадность)"
+            fear_greed_text = f"😊 Индекс страха и жадности: *{data['fear_greed_index']}* (Жадность)"
         elif data['fear_greed_index'] >= 40:
-            fear_greed_text = f"😐 Индекс страха и жадности: {data['fear_greed_index']} (Нейтрально)"
+            fear_greed_text = f"😐 Индекс страха и жадности: *{data['fear_greed_index']}* (Нейтрально)"
         elif data['fear_greed_index'] >= 25:
-            fear_greed_text = f"😨 Индекс страха и жадности: {data['fear_greed_index']} (Страх)"
+            fear_greed_text = f"😨 Индекс страха и жадности: *{data['fear_greed_index']}* (Страх)"
         else:
-            fear_greed_text = f"😱 Индекс страха и жадности: {data['fear_greed_index']} (Крайний страх)"
+            fear_greed_text = f"😱 Индекс страха и жадности: *{data['fear_greed_index']}* (Крайний страх)"
     
     # Формируем список топ-10 криптовалют
-    top_coins_text = "\n🏆 Топ-10 криптовалют:\n"
+    top_coins_text = "\n🏆 *Топ-10 криптовалют:*\n"
     for i, coin in enumerate(data['top_coins'], 1):
         change_24h = coin['price_change_percentage_24h']
         change_emoji = "📈" if change_24h > 0 else "📉"
         top_coins_text += f"{i}. {coin['name']} ({coin['symbol'].upper()}): ${coin['current_price']:,.2f} {change_emoji} {change_24h:.2f}%\n"
     
     return f"""
-📊 dEagle-крипто дайджест на {datetime.now(MADRID_TZ).strftime('%d.%m.%Y %H:%M')} (по времени Мадрида)
+📊 dEagle-крипто дайджест на *{datetime.now(MADRID_TZ).strftime('%d.%m.%Y %H:%M')}* (GMT+2)
 
-💰 Доминация BTC: {data['btc_dominance']:.2f}%
-💎 Капитализация рынка: ${data['total_market_cap']:,.0f}
-📈 Цена BTC: ${data['btc_price']:,.0f} ({data['btc_change_24h']:.2f}% за 24ч)
+💰 Доминация BTC: *{data['btc_dominance']:.2f}*%
+📈 Цена BTC: *${data['btc_price']:,.0f}* ({data['btc_change_24h']:.2f}% за 24ч)
+💎 Капитализация рынка: _${data['total_market_cap']:,.0f}_
 {fear_greed_text}
 {top_coins_text}
 """
@@ -204,7 +204,7 @@ async def cmd_start(message: types.Message):
 async def cmd_check(message: types.Message):
     """Обработчик команды /check"""
     data = await fetch_crypto_data()
-    await message.answer(create_summary_message(data))
+    await message.answer(create_summary_message(data), parse_mode="Markdown")
 
 @dp.callback_query(F.data == "check")
 async def process_check_callback(callback: types.CallbackQuery):
@@ -214,7 +214,8 @@ async def process_check_callback(callback: types.CallbackQuery):
     data = await fetch_crypto_data()
     await bot.send_message(
         chat_id=callback.message.chat.id,
-        text=create_summary_message(data)
+        text=create_summary_message(data),
+        parse_mode="Markdown"
     )
     await callback.answer()
 
@@ -260,8 +261,8 @@ async def process_set_time_callback(callback: types.CallbackQuery, state: FSMCon
     await bot.send_message(
         chat_id=callback.message.chat.id,
         text=f"🕒 Текущее время уведомлений: {current_time}\n\n"
-             f"Введите новое время для ежедневных уведомлений в формате ЧЧ:ММ по времени Мадрида (например, 09:00):\n"
-             f"⚠️ Учитывайте, что время указывается по часовому поясу Мадрида (UTC+1)\n\n"
+             f"Введите новое время для ежедневных уведомлений в формате ЧЧ:ММ (GMT+2) (например, 09:00):\n"
+             f"⚠️ Учитывайте, что время указывается по часовому поясу GMT+2\n\n"
              f"Примеры форматов:\n"
              f"• 09:00 - уведомления в 9 утра\n"
              f"• 15:30 - уведомления в 3:30 дня\n"
@@ -293,8 +294,8 @@ async def process_time_input(message: types.Message, state: FSMContext):
             ])
             
             await message.answer(
-                f"✅ Уведомления настроены на время {time_str} (по времени Мадрида)\n"
-                f"Следующее уведомление будет отправлено в {time_str} по времени Мадрида",
+                f"✅ Уведомления настроены на время {time_str} (GMT+2)\n"
+                f"Следующее уведомление будет отправлено в {time_str} (GMT+2)",
                 reply_markup=keyboard
             )
             await state.clear()
@@ -406,7 +407,7 @@ async def send_notifications():
                         if last_sent is None or (current_time - last_sent).total_seconds() >= 60:
                             try:
                                 print(f"Отправка уведомления пользователю {user_id} в {notification_time}")
-                                await bot.send_message(user_id, create_summary_message(data))
+                                await bot.send_message(user_id, create_summary_message(data), parse_mode="Markdown")
                                 # Обновляем время последней отправки
                                 last_notification_sent[user_id] = current_time
                             except Exception as e:
@@ -449,7 +450,7 @@ async def cmd_help(message: types.Message):
 1. Нажмите /start для начала работы
 2. Используйте кнопку "Проверить показатели" для получения актуальных данных
 3. В настройках можно установить время ежедневных уведомлений
-4. Уведомления отправляются по времени Мадрида (UTC+1)
+4. Уведомления отправляются по времени GMT+2
 
 📊 В уведомлениях вы получите:
 • Текущую цену Bitcoin
@@ -457,8 +458,20 @@ async def cmd_help(message: types.Message):
 • Доминацию BTC
 • Общую капитализацию рынка
 • Топ-10 криптовалют по капитализации
+• Индекс страха и жадности
+
+✏️ Форматирование текста:
+• *Жирный текст* - заключите текст в звездочки
+• _Курсив_ - заключите текст в нижние подчеркивания
+• __Подчеркнутый__ - используйте двойное нижнее подчеркивание
+• `Моноширинный шрифт` - используйте обратные кавычки
+• ~Зачеркнутый~ - используйте тильды
+
+Примеры:
+*Жирный* _курсив_ __подчеркнутый__
+`код` ~зачеркнутый~
 """
-    await message.answer(help_text)
+    await message.answer(help_text, parse_mode="Markdown")
 
 async def main():
     """Основная функция запуска бота"""

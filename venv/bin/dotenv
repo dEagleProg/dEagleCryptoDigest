@@ -1,4 +1,6 @@
-#!/Users/maverick/Desktop/dEagleCryptoDigest/venv/bin/python3.13
+#!/bin/sh
+'''exec' "/Users/maverick/Desktop/My Projects/dEagleCryptoDigest/venv/bin/python3.11" "$0" "$@"
+' '''
 # -*- coding: utf-8 -*-
 import re
 import sys
