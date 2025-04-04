@@ -183,7 +183,7 @@ def create_summary_message(data):
         top_coins_text += f"{i}. {coin['name']} ({coin['symbol'].upper()}): ${coin['current_price']:,.2f} {change_emoji} {change_24h:.2f}%\n"
     
     return f"""
-📊 dEagle-крипто дайджест на {datetime.now(MADRID_TZ).strftime('%d.%m.%Y %H:%M')} (GMT+2)
+_dEagle-крипто_ дайджест на *{datetime.now(MADRID_TZ).strftime('%d.%m.%Y %H:%M')}* (GMT+2)
 
 💰 Доминация BTC: *{data['btc_dominance']:.2f}*%
 📈 Цена BTC: *${data['btc_price']:,.0f}* ({data['btc_change_24h']:.2f}% за 24ч)
