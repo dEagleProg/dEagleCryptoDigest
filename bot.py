@@ -125,13 +125,24 @@ async def fetch_crypto_data():
                     raise Exception(f"Ошибка API: {response.status}")
                 global_data = await response.json()
 
+            # Получаем индекс страха и жадности
+            async with session.get(
+                f"{os.getenv('FEAR_GREED_API_URL')}",
+                headers=headers
+            ) as response:
+                if response.status == 200:
+                    fear_greed_data = await response.json()
+                    fear_greed_index = int(fear_greed_data['data'][0]['value'])
+                else:
+                    fear_greed_index = None
+
             # Формируем данные
             data = {
                 'btc_price': next(coin['current_price'] for coin in coins_data if coin['id'] == 'bitcoin'),
                 'btc_change_24h': next(coin['price_change_percentage_24h'] for coin in coins_data if coin['id'] == 'bitcoin'),
                 'total_market_cap': global_data['data']['total_market_cap']['usd'],
                 'btc_dominance': global_data['data']['market_cap_percentage']['btc'],
-                'fear_greed_index': 50,  # Временное значение
+                'fear_greed_index': fear_greed_index,
                 'top_coins': coins_data
             }
 
@@ -149,6 +160,20 @@ def create_summary_message(data):
     if data is None:
         return "❌ Извините, не удалось получить данные о криптовалютах. Пожалуйста, попробуйте позже."
     
+    # Определяем эмодзи и статус для индекса страха и жадности
+    fear_greed_text = ""
+    if data['fear_greed_index'] is not None:
+        if data['fear_greed_index'] >= 75:
+            fear_greed_text = f"😱 Индекс страха и жадности: {data['fear_greed_index']} (Крайняя жадность)"
+        elif data['fear_greed_index'] >= 60:
+            fear_greed_text = f"😊 Индекс страха и жадности: {data['fear_greed_index']} (Жадность)"
+        elif data['fear_greed_index'] >= 40:
+            fear_greed_text = f"😐 Индекс страха и жадности: {data['fear_greed_index']} (Нейтрально)"
+        elif data['fear_greed_index'] >= 25:
+            fear_greed_text = f"😨 Индекс страха и жадности: {data['fear_greed_index']} (Страх)"
+        else:
+            fear_greed_text = f"😱 Индекс страха и жадности: {data['fear_greed_index']} (Крайний страх)"
+    
     # Формируем список топ-10 криптовалют
     top_coins_text = "\n🏆 Топ-10 криптовалют:\n"
     for i, coin in enumerate(data['top_coins'], 1):
@@ -162,6 +187,7 @@ def create_summary_message(data):
 💰 Доминация BTC: {data['btc_dominance']:.2f}%
 💎 Капитализация рынка: ${data['total_market_cap']:,.0f}
 📈 Цена BTC: ${data['btc_price']:,.0f} ({data['btc_change_24h']:.2f}% за 24ч)
+{fear_greed_text}
 {top_coins_text}
 """
 
