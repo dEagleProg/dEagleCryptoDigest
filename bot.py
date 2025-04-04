@@ -380,7 +380,7 @@ async def process_settings_callback(callback: types.CallbackQuery):
         chat_id=callback.message.chat.id,
         text=f"⚙️ Ваши настройки уведомлений:\n\n"
              f"🕒 Текущее время уведомлений: {current_time}\n"
-             f"🌍 Часовой пояс: Мадрид (UTC+1)\n\n"
+             f"🌍 Часовой пояс: GMT+2\n\n"
              f"Выберите действие:",
         reply_markup=keyboard
     )
