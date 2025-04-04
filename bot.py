@@ -187,7 +187,7 @@ def create_summary_message(data):
 
 💰 Доминация BTC: *{data['btc_dominance']:.2f}*%
 📈 Цена BTC: *${data['btc_price']:,.0f}* ({data['btc_change_24h']:.2f}% за 24ч)
-💎 Капитализация рынка: _${data['total_market_cap']:,.0f}_ 
+💎 Капитализация рынка: _${data['total_market_cap']:,.0f}_ ({data['total_market_cap_change_24h']:.2f}% за 24ч)
 {fear_greed_text}
 {top_coins_text}
 """
