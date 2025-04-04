@@ -198,7 +198,7 @@ async def cmd_start(message: types.Message):
         [InlineKeyboardButton(text="📊 Проверить показатели", callback_data="check")],
         [InlineKeyboardButton(text="⚙️ Настройка уведомлений", callback_data="settings")]
     ])
-    await message.answer("Привет! Я бот для мониторинга криптовалютных показателей.", reply_markup=keyboard)
+    await message.answer("Приветствую, деген. Я бот для мониторинга криптовалютных показателей. Поставь уведомления и будь в курсе когда уже бычка", reply_markup=keyboard)
 
 @dp.message(Command("check"))
 async def cmd_check(message: types.Message):
