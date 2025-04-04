@@ -141,6 +141,7 @@ async def fetch_crypto_data():
                 'btc_price': next(coin['current_price'] for coin in coins_data if coin['id'] == 'bitcoin'),
                 'btc_change_24h': next(coin['price_change_percentage_24h'] for coin in coins_data if coin['id'] == 'bitcoin'),
                 'total_market_cap': global_data['data']['total_market_cap']['usd'],
+                'total_market_cap_change_24h': global_data['data']['market_cap_change_percentage_24h_usd'],
                 'btc_dominance': global_data['data']['market_cap_percentage']['btc'],
                 'fear_greed_index': fear_greed_index,
                 'top_coins': coins_data
@@ -182,11 +183,11 @@ def create_summary_message(data):
         top_coins_text += f"{i}. {coin['name']} ({coin['symbol'].upper()}): ${coin['current_price']:,.2f} {change_emoji} {change_24h:.2f}%\n"
     
     return f"""
-📊 dEagle-крипто дайджест на *{datetime.now(MADRID_TZ).strftime('%d.%m.%Y %H:%M')}* (GMT+2)
+📊 dEagle-крипто дайджест на {datetime.now(MADRID_TZ).strftime('%d.%m.%Y %H:%M')} (GMT+2)
 
 💰 Доминация BTC: *{data['btc_dominance']:.2f}*%
 📈 Цена BTC: *${data['btc_price']:,.0f}* ({data['btc_change_24h']:.2f}% за 24ч)
-💎 Капитализация рынка: _${data['total_market_cap']:,.0f}_ ({data['total_market_cap_change_24h']:.2f}% за 24ч)
+💎 Капитализация рынка: _${data['total_market_cap']:,.0f}_ 
 {fear_greed_text}
 {top_coins_text}
 """
