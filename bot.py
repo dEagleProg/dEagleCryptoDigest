@@ -185,8 +185,8 @@ def create_summary_message(data):
     return f"""
 _dEagle-крипто_ дайджест на *{datetime.now(MADRID_TZ).strftime('%d.%m.%Y %H:%M')}* (GMT+2)
 
-💰 Доминация BTC: *{data['btc_dominance']:.2f}*%
 📈 Цена BTC: *${data['btc_price']:,.0f}* ({data['btc_change_24h']:.2f}% за 24ч)
+💰 Доминация BTC: *{data['btc_dominance']:.2f}*%
 💎 Капитализация рынка: _${data['total_market_cap']:,.0f}_ ({data['total_market_cap_change_24h']:.2f}% за 24ч)
 {fear_greed_text}
 {top_coins_text}
