@@ -216,12 +216,27 @@ async def process_check_callback(callback: types.CallbackQuery):
     if not callback.message:
         return
     data = await fetch_crypto_data()
-    await bot.send_message(
-        chat_id=callback.message.chat.id,
-        text=create_summary_message(data),
-        parse_mode="Markdown"
-    )
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🔄 Обновить данные", callback_data="check")]
+    ])
+    try:
+        await bot.edit_message_text(
+            chat_id=callback.message.chat.id,
+            message_id=callback.message.message_id,
+            text=create_summary_message(data),
+            parse_mode="Markdown",
+            reply_markup=keyboard
+        )
+    except Exception:
+        # Если не удалось отредактировать (например, сообщение слишком старое), отправляем новое
+        await bot.send_message(
+            chat_id=callback.message.chat.id,
+            text=create_summary_message(data),
+            parse_mode="Markdown",
+            reply_markup=keyboard
+        )
     await callback.answer()
+    
 
 @dp.message(Command("settings"))
 async def cmd_settings(message: types.Message):
@@ -450,7 +465,7 @@ async def set_bot_commands():
 async def cmd_help(message: types.Message):
     """Обработчик команды /help"""
     help_text = """
-🤖 Я бот для мониторинга криптовалютных показателей.
+Я бот для мониторинга криптовалютных показателей.
 
 📝 Доступные команды:
 /start - Запустить бота
