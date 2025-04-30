@@ -205,7 +205,10 @@ async def cmd_start(message: types.Message):
 async def cmd_check(message: types.Message):
     """Обработчик команды /check"""
     data = await fetch_crypto_data()
-    await message.answer(create_summary_message(data), parse_mode="Markdown")
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🔄 Обновить данные", callback_data="check")]
+    ])
+    await message.answer(create_summary_message(data), parse_mode="Markdown", reply_markup=keyboard)
 
 @dp.callback_query(F.data == "check")
 async def process_check_callback(callback: types.CallbackQuery):
@@ -408,7 +411,15 @@ async def send_notifications():
                         if last_sent is None or (current_time - last_sent).total_seconds() >= 60:
                             try:
                                 print(f"Отправка уведомления пользователю {user_id} в {notification_time}")
-                                await bot.send_message(user_id, create_summary_message(data), parse_mode="Markdown")
+                                keyboard = InlineKeyboardMarkup(inline_keyboard=[
+                                    [InlineKeyboardButton(text="🔄 Обновить данные", callback_data="check")]
+                                ])
+                                await bot.send_message(
+                                    user_id, 
+                                    create_summary_message(data), 
+                                    parse_mode="Markdown",
+                                    reply_markup=keyboard
+                                )
                                 # Обновляем время последней отправки
                                 last_notification_sent[user_id] = current_time
                             except Exception as e:
